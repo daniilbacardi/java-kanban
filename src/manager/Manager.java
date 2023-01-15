@@ -32,11 +32,12 @@ public class Manager {
     public ArrayList<Subtask> getEpicSubtasks(int epicId) {
         ArrayList<Subtask> subTasks = new ArrayList<>();
         Epic epic = EPICS.get(epicId);
-        if (epic == null) {
-            return null;
-        }
-        for (int id : epic.getSUBTASK_IDS()) {
-            subTasks.add(SUBTASKS.get(id));
+        if (epic.getSUBTASK_IDS().isEmpty()) {
+            System.out.println("В Epic ID=" + epicId + " нет подзадач");
+        } else {
+            for (int id : epic.getSUBTASK_IDS()) {
+                subTasks.add(SUBTASKS.get(id));
+            }
         }
         return subTasks;
     }
