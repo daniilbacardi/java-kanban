@@ -95,15 +95,15 @@ public class Manager {
 
     public void updateEpic(Epic epic) {
         EPICS.put(epic.getId(), epic);
-        ArrayList<String> statusesOfSub;
-        statusesOfSub = getEpicSubtasksStatuses(epic.getId());
-        if (epic.getSUBTASK_IDS() == null || statusesOfSub.contains("NEW")
-                && !statusesOfSub.contains("IN_PROGRESS")
-                && !statusesOfSub.contains("DONE")) {
+        ArrayList<String> statusesOfSubtasks;
+        statusesOfSubtasks = getEpicSubtasksStatuses(epic.getId());
+        if (epic.getSUBTASK_IDS() == null || statusesOfSubtasks.contains("NEW")
+                && !statusesOfSubtasks.contains("IN_PROGRESS")
+                && !statusesOfSubtasks.contains("DONE")) {
             epic.setStatus("NEW");
-        } else if (!statusesOfSub.contains("NEW")
-                && !statusesOfSub.contains("IN_PROGRESS")
-                && statusesOfSub.contains("DONE")) {
+        } else if (!statusesOfSubtasks.contains("NEW")
+                && !statusesOfSubtasks.contains("IN_PROGRESS")
+                && statusesOfSubtasks.contains("DONE")) {
             epic.setStatus("DONE");
         } else {
             epic.setStatus("IN_PROGRESS");
