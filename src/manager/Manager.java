@@ -83,9 +83,6 @@ public class Manager {
     public ArrayList<String> getEpicSubtasksStatuses(int epicId) {
         ArrayList<String> statuses = new ArrayList<>();
         Epic epic = EPICS.get(epicId);
-        if (epic == null) {
-            return null;
-        }
         for (int id : epic.getSUBTASK_IDS()) {
             statuses.add(SUBTASKS.get(id).getStatus());
         }
