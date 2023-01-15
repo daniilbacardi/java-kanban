@@ -41,7 +41,7 @@ public class Main {
 
         manager.deleteAllTasks();
 
-        System.out.println("Все Task-и удалены" + manager.getAllTasks() + "\n");
+        System.out.println("Все Task-и удалены " + manager.getAllTasks() + "\n");
 
         System.out.println("Тест: Epic и Subtask сущности\n");
 
@@ -52,6 +52,7 @@ public class Main {
         manager.addNewEpic(epicTwo);
 
         System.out.println("Данные по добавленным Epic 1 и Epic 2 " + manager.getAllEpics());
+        System.out.println("В Epic 1 пока нет Subtask-ов " + manager.getEpicSubtasks(epicOne.getId()));
 
         Subtask subtaskOneEpicOne = new Subtask(
                 "Subtask 1 Epic 1",
