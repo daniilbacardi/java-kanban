@@ -86,7 +86,6 @@ public class Manager {
         for (int id : epic.getSUBTASK_IDS()) {
             statuses.add(SUBTASKS.get(id).getStatus());
         }
-
         return statuses;
     }
 
@@ -107,6 +106,7 @@ public class Manager {
         }
 
     }
+
     public void updateSubtask(Subtask subtask) {
         SUBTASKS.put(subtask.getId(), subtask);
         int epicId = subtask.getEpicId();
