@@ -100,7 +100,7 @@ public class Manager {
                 && statusesOfSubtasks.contains("DONE")) {
             epic.setStatus("DONE");
         } else if (statusesOfSubtasks.isEmpty()) {
-            epic.setStatus("NEW"); // добавил проверку, если из Epic-а удалили все задачи и он стал пустым
+            epic.setStatus("NEW");
         } else {
             epic.setStatus("IN_PROGRESS");
         }
@@ -120,7 +120,7 @@ public class Manager {
     public void deleteEpicById(int epicId) {
         Epic epic = epics.get(epicId);
         for (int id : epic.getSubtaskIds()) {
-            deleteSubtaskById(id);
+            subtasks.remove(id);
         }
         epics.remove(epicId);
     }
