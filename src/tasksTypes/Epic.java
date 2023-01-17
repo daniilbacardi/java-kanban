@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task {
-    private final ArrayList<Integer> SUBTASK_IDS = new ArrayList<>();
+    private final ArrayList<Integer> subtaskIds = new ArrayList<>();
 
     public Epic(String name, String description) {
         super(name, description);
@@ -16,11 +16,11 @@ public class Epic extends Task {
     }
 
     public void addSubtaskId(int id) {
-        SUBTASK_IDS.add(id);
+        subtaskIds.add(id);
     }
 
-    public List<Integer> getSUBTASK_IDS() {
-        return SUBTASK_IDS;
+    public List<Integer> getSubtaskIds() {
+        return subtaskIds;
     }
 
     @Override
@@ -29,12 +29,12 @@ public class Epic extends Task {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Epic epic = (Epic) o;
-        return Objects.equals(SUBTASK_IDS, epic.SUBTASK_IDS);
+        return Objects.equals(subtaskIds, epic.subtaskIds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(SUBTASK_IDS);
+        return Objects.hash(subtaskIds);
     }
 
     @Override
