@@ -107,13 +107,13 @@ public class InMemoryTaskManager implements TaskManager {
         epics.put(epic.getId(), epic);
         ArrayList<String> statusesOfSubtasks;
         statusesOfSubtasks = getEpicSubtasksStatuses(epic.getId());
-        if (statusesOfSubtasks.contains(TaskStatus.NEW)
-                && !statusesOfSubtasks.contains(TaskStatus.IN_PROGRESS)
-                && !statusesOfSubtasks.contains(TaskStatus.DONE)) {
+        if (statusesOfSubtasks.contains("NEW")
+                && !statusesOfSubtasks.contains("IN_PROGRESS")
+                && !statusesOfSubtasks.contains("DONE")) {
             epic.setStatus(TaskStatus.NEW);
-        } else if (!statusesOfSubtasks.contains(TaskStatus.NEW)
-                && !statusesOfSubtasks.contains(TaskStatus.IN_PROGRESS)
-                && statusesOfSubtasks.contains(TaskStatus.DONE)) {
+        } else if (!statusesOfSubtasks.contains("NEW")
+                && !statusesOfSubtasks.contains("IN_PROGRESS")
+                && statusesOfSubtasks.contains("DONE")) {
             epic.setStatus(TaskStatus.DONE);
         } else if (statusesOfSubtasks.isEmpty()) {
             epic.setStatus(TaskStatus.NEW);
