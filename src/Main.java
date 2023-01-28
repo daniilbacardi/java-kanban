@@ -1,11 +1,13 @@
+import manager.*;
 import tasksTypes.Epic;
 import tasksTypes.Subtask;
 import tasksTypes.Task;
-import manager.Manager;
+import tasksTypes.TaskStatus;
 
 public class Main {
     public static void main(String[] args) {
-        Manager manager = new Manager();
+        TaskManager manager = Managers.getDefault();
+        HistoryManager history = Managers.getDefaultHistory();
 
         System.out.println("Тест: Task сущность\n");
 
@@ -15,19 +17,21 @@ public class Main {
         manager.createNewTask(taskOne);
         manager.createNewTask(taskTwo);
 
-        System.out.println("Данные по добавленной Task 1 " + manager.getTaskById(0));
-        System.out.println("Данные по добавленным Task 1 и Task 2 " + manager.getAllTasks());
+        manager.getTaskById(0);
+        manager.getTaskById(1);
 
-        Task updatedTaskOne = new Task(
+        history.getHistory();
+
+       Task updatedTaskOne = new Task(
                 taskOne.getId(),
                 "Task 1",
                 "Обновленное описание Task 1",
-                "IN_PROGRESS");
+                TaskStatus.IN_PROGRESS);
         Task updatedTaskTwo = new Task(
                 taskTwo.getId(),
                 "Task 2",
                 "Обновленное описание Task 2",
-                "DONE");
+                TaskStatus.DONE);
 
         manager.updateTask(updatedTaskOne);
         manager.updateTask(updatedTaskTwo);
@@ -54,6 +58,8 @@ public class Main {
         System.out.println("Данные по добавленным Epic 1 и Epic 2 " + manager.getAllEpics());
         System.out.println("В Epic 1 пока нет Subtask-ов " + manager.getEpicSubtasks(epicOne.getId()));
 
+        history.getHistory();
+
         Subtask subtaskOneEpicOne = new Subtask(
                 "Subtask 1 Epic 1",
                 "Описание Subtask 1 Epic 1",
@@ -79,16 +85,21 @@ public class Main {
         System.out.println("Данные по добавленным 3-м Subtask-ам в Epic 1 и 1-м Subtask-е в Epic 2 "
                 + manager.getAllSubtasks());
         System.out.println("Данные по добавленной Subtask-е с id=4 в Epic 1 " + manager.getSubtaskById(4));
+
+        history.getHistory();
+
         System.out.println("Данные по добавленным 3-м Subtask-ам в Epic 1 "
                 + manager.getEpicSubtasks(epicOne.getId()));
         System.out.println("Данные по добавленной 1-й Subtask-е в Epic 2 "
                 + manager.getEpicSubtasks(epicTwo.getId()));
 
+        history.getHistory();
+
         Subtask updatedSubtaskOneEpicOne = new Subtask(
                 subtaskOneEpicOne.getId(),
                 "Обновленная Subtask 1 Epic 1",
                 "Описание обновленной Subtask 1 Epic 1",
-                "DONE",
+                TaskStatus.DONE,
                 epicOne.getId());
 
         manager.updateSubtask(updatedSubtaskOneEpicOne);
@@ -102,7 +113,7 @@ public class Main {
                 subtaskTreeEpicOne.getId(),
                 "Обновленная Subtask 3 Epic 1",
                 "Описание обновленной Subtask 3 Epic 1",
-                "DONE",
+                TaskStatus.DONE,
                 epicOne.getId());
 
         manager.updateSubtask(updatedSubtaskTreeEpicOne);
@@ -113,11 +124,13 @@ public class Main {
                 + "т.к. не все Subtask-и в статусах DONE) "
                 + manager.getEpicById(2));
 
+        history.getHistory();
+
         Subtask updatedSubtaskOneEpicTwo = new Subtask(
                 subtaskOneEpicTwo.getId(),
                 "Обновленная Subtask 1 of Epic 2",
                 "Описание обновленной Subtask 1 of Epic 2",
-                "DONE",
+                TaskStatus.DONE,
                 epicTwo.getId());
 
         manager.updateSubtask(updatedSubtaskOneEpicTwo);
@@ -158,5 +171,6 @@ public class Main {
         manager.deleteAllEpics();
 
         System.out.println("Все Epic-и удалены " + manager.getAllEpics());
+
     }
 }
