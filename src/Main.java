@@ -17,8 +17,9 @@ public class Main {
         manager.createNewTask(taskOne);
         manager.createNewTask(taskTwo);
 
-        manager.getTaskById(0);
-        manager.getTaskById(1);
+        System.out.println("Данные по добавленной Task 1 " + manager.getTaskById(0));
+        System.out.println("Данные по добавленной Task 2 " + manager.getTaskById(1));
+        System.out.println("Данные по добавленным Task 1 и Task 2 " + manager.getAllTasks());
 
         history.getHistory();
 
@@ -57,8 +58,6 @@ public class Main {
 
         System.out.println("Данные по добавленным Epic 1 и Epic 2 " + manager.getAllEpics());
         System.out.println("В Epic 1 пока нет Subtask-ов " + manager.getEpicSubtasks(epicOne.getId()));
-
-        history.getHistory();
 
         Subtask subtaskOneEpicOne = new Subtask(
                 "Subtask 1 Epic 1",
@@ -150,8 +149,6 @@ public class Main {
                 + "т.к. добавилась Subtask-а в статусе NEW) "
                 + manager.getEpicById(3));
 
-        System.out.println(manager.getEpicSubtasks(epicTwo.getId()));
-
         manager.deleteSubtaskById(8);
 
         System.out.println("Subtask 1 Epic 1 (id = 8) - удалена " + manager.getSubtaskById(8));
@@ -162,7 +159,9 @@ public class Main {
         manager.deleteAllSubtasks();
 
         System.out.println("Все Sutask-и удалены " + manager.getAllSubtasks());
-        System.out.println(manager.getAllEpics());
+        System.out.println("Данные по обновленным Epic-ам (статус изменился на NEW) "
+                + "т.к. все ранее добавленные Subtask-и были удалены) "
+                + manager.getAllEpics());
 
         manager.deleteEpicById(2);
 
@@ -171,6 +170,5 @@ public class Main {
         manager.deleteAllEpics();
 
         System.out.println("Все Epic-и удалены " + manager.getAllEpics());
-
     }
 }
