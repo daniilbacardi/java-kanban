@@ -8,13 +8,14 @@ import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private final List<Task> tasksViewHistory = new ArrayList<>();
+    private static final int VIEW_TASKS_LIMIT = 10;
 
     @Override
     public void add(Task task) {
         tasksViewHistory.add(task);
-        int viewCount = tasksViewHistory.size();
-        if (tasksViewHistory.size() > 10) {
-            for (int i = 0; i < viewCount - 10; i++) {
+        int viewCounter = tasksViewHistory.size();
+        if (tasksViewHistory.size() > VIEW_TASKS_LIMIT) {
+            for (int i = 0; i < viewCounter - VIEW_TASKS_LIMIT; i++) {
                 tasksViewHistory.remove(i);
             }
         }
