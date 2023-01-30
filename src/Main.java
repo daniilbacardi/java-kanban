@@ -7,7 +7,6 @@ import tasksTypes.TaskStatus;
 public class Main {
     public static void main(String[] args) {
         TaskManager manager = Managers.getDefault();
-        HistoryManager history = Managers.getDefaultHistory();
 
         System.out.println("Тест: Task сущность\n");
 
@@ -21,9 +20,9 @@ public class Main {
         System.out.println("Данные по добавленной Task 2 " + manager.getTaskById(1));
         System.out.println("Данные по добавленным Task 1 и Task 2 " + manager.getAllTasks());
 
-        history.getHistory();
+        System.out.println("Последние просмотренные задачи: " + manager.getHistory());
 
-       Task updatedTaskOne = new Task(
+        Task updatedTaskOne = new Task(
                 taskOne.getId(),
                 "Task 1",
                 "Обновленное описание Task 1",
@@ -85,14 +84,14 @@ public class Main {
                 + manager.getAllSubtasks());
         System.out.println("Данные по добавленной Subtask-е с id=4 в Epic 1 " + manager.getSubtaskById(4));
 
-        history.getHistory();
+        System.out.println("Последние просмотренные задачи: " + manager.getHistory());
 
         System.out.println("Данные по добавленным 3-м Subtask-ам в Epic 1 "
                 + manager.getEpicSubtasks(epicOne.getId()));
         System.out.println("Данные по добавленной 1-й Subtask-е в Epic 2 "
                 + manager.getEpicSubtasks(epicTwo.getId()));
 
-        history.getHistory();
+        System.out.println("Последние просмотренные задачи: " + manager.getHistory());
 
         Subtask updatedSubtaskOneEpicOne = new Subtask(
                 subtaskOneEpicOne.getId(),
@@ -123,7 +122,7 @@ public class Main {
                 + "т.к. не все Subtask-и в статусах DONE) "
                 + manager.getEpicById(2));
 
-        history.getHistory();
+        System.out.println("Последние просмотренные задачи: " + manager.getHistory());
 
         Subtask updatedSubtaskOneEpicTwo = new Subtask(
                 subtaskOneEpicTwo.getId(),
