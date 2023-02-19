@@ -47,4 +47,6 @@ public interface TaskManager {
     void deleteAllSubtasks();
 
     List<Task> getHistory();
+
+    void remove(int id);
 }

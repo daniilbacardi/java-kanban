@@ -2,61 +2,26 @@ import manager.*;
 import tasksTypes.Epic;
 import tasksTypes.Subtask;
 import tasksTypes.Task;
-import tasksTypes.TaskStatus;
 
 public class Main {
     public static void main(String[] args) {
         TaskManager manager = Managers.getDefault();
 
-        System.out.println("Тест: Task сущность\n");
-
         Task taskOne = new Task("Task 1", "Описание Task 1");
         Task taskTwo = new Task("Task 2", "Описание Task 2");
+        Task taskThree = new Task("Task 3", "Описание Task 3");
 
         manager.createNewTask(taskOne);
         manager.createNewTask(taskTwo);
-
-        System.out.println("Данные по добавленной Task 1 " + manager.getTaskById(0));
-        System.out.println("Данные по добавленной Task 2 " + manager.getTaskById(1));
-        System.out.println("Данные по добавленным Task 1 и Task 2 " + manager.getAllTasks());
-
-        System.out.println("Последние просмотренные задачи: " + manager.getHistory());
-
-        Task updatedTaskOne = new Task(
-                taskOne.getId(),
-                "Task 1",
-                "Обновленное описание Task 1",
-                TaskStatus.IN_PROGRESS);
-        Task updatedTaskTwo = new Task(
-                taskTwo.getId(),
-                "Task 2",
-                "Обновленное описание Task 2",
-                TaskStatus.DONE);
-
-        manager.updateTask(updatedTaskOne);
-        manager.updateTask(updatedTaskTwo);
-
-        System.out.println("Данные по обновленным Task 1 (статус IN_PROGRESS) и Task 2 (статус DONE) "
-                + manager.getAllTasks());
-
-        manager.deleteTaskById(0);
-
-        System.out.println("Task 1 удалена, осталась только Task 2 " + manager.getAllTasks());
-
-        manager.deleteAllTasks();
-
-        System.out.println("Все Task-и удалены " + manager.getAllTasks() + "\n");
-
-        System.out.println("Тест: Epic и Subtask сущности\n");
+        manager.createNewTask(taskThree);
 
         Epic epicOne = new Epic("Epic 1", "Описание Epic 1");
         Epic epicTwo = new Epic("Epic 2", "Описание Epic 2");
+        Epic epicThree = new Epic("Epic 3", "Описание Epic 3");
 
         manager.createNewEpic(epicOne);
         manager.createNewEpic(epicTwo);
-
-        System.out.println("Данные по добавленным Epic 1 и Epic 2 " + manager.getAllEpics());
-        System.out.println("В Epic 1 пока нет Subtask-ов " + manager.getEpicSubtasks(epicOne.getId()));
+        manager.createNewEpic(epicThree);
 
         Subtask subtaskOneEpicOne = new Subtask(
                 "Subtask 1 Epic 1",
@@ -74,100 +39,49 @@ public class Main {
                 "Subtask 1 Epic 2",
                 "Описание Subtask 1 Epic 2",
                 epicTwo.getId());
-
-        manager.createNewSubtask(subtaskOneEpicOne);
-        manager.createNewSubtask(subtaskTwoEpicOne);
-        manager.createNewSubtask(subtaskTreeEpicOne);
-        manager.createNewSubtask(subtaskOneEpicTwo);
-
-        System.out.println("Данные по добавленным 3-м Subtask-ам в Epic 1 и 1-м Subtask-е в Epic 2 "
-                + manager.getAllSubtasks());
-        System.out.println("Данные по добавленной Subtask-е с id=4 в Epic 1 " + manager.getSubtaskById(4));
-
-        System.out.println("Последние просмотренные задачи: " + manager.getHistory());
-
-        System.out.println("Данные по добавленным 3-м Subtask-ам в Epic 1 "
-                + manager.getEpicSubtasks(epicOne.getId()));
-        System.out.println("Данные по добавленной 1-й Subtask-е в Epic 2 "
-                + manager.getEpicSubtasks(epicTwo.getId()));
-
-        System.out.println("Последние просмотренные задачи: " + manager.getHistory());
-
-        Subtask updatedSubtaskOneEpicOne = new Subtask(
-                subtaskOneEpicOne.getId(),
-                "Обновленная Subtask 1 Epic 1",
-                "Описание обновленной Subtask 1 Epic 1",
-                TaskStatus.DONE,
-                epicOne.getId());
-
-        manager.updateSubtask(updatedSubtaskOneEpicOne);
-
-        System.out.println("Данные по Subtask-ам Epic 1: обновлена Subtask 1 (статус - DONE)"
-                + manager.getEpicSubtasks(epicOne.getId()));
-        System.out.println("Данные по обновленному Epic 1 (статус изменился на IN_PROGRESS) "
-                + manager.getEpicById(2));
-
-        Subtask updatedSubtaskTreeEpicOne = new Subtask(
-                subtaskTreeEpicOne.getId(),
-                "Обновленная Subtask 3 Epic 1",
-                "Описание обновленной Subtask 3 Epic 1",
-                TaskStatus.DONE,
-                epicOne.getId());
-
-        manager.updateSubtask(updatedSubtaskTreeEpicOne);
-
-        System.out.println("Данные по обновленной Subtask 3 Epic 1 (статус изменился на DONE) "
-                + manager.getSubtaskById(6));
-        System.out.println("Данные по Epic 1 (статус не изменился, текущий - IN_PROGRESS, "
-                + "т.к. не все Subtask-и в статусах DONE) "
-                + manager.getEpicById(2));
-
-        System.out.println("Последние просмотренные задачи: " + manager.getHistory());
-
-        Subtask updatedSubtaskOneEpicTwo = new Subtask(
-                subtaskOneEpicTwo.getId(),
-                "Обновленная Subtask 1 of Epic 2",
-                "Описание обновленной Subtask 1 of Epic 2",
-                TaskStatus.DONE,
-                epicTwo.getId());
-
-        manager.updateSubtask(updatedSubtaskOneEpicTwo);
-
-        System.out.println("Данные по обновленному Epic 2 (статус изменился на DONE) "
-                + "т.к. все Subtask-и в статусах DONE) "
-                + manager.getEpicById(3));
-
         Subtask subtaskTwoEpicTwo = new Subtask(
                 "Subtask 2 Epic 2",
                 "Описание Subtask 2 Epic 2",
                 epicTwo.getId());
 
+        manager.createNewSubtask(subtaskOneEpicOne);
+        manager.createNewSubtask(subtaskTwoEpicOne);
+        manager.createNewSubtask(subtaskTreeEpicOne);
+        manager.createNewSubtask(subtaskOneEpicTwo);
         manager.createNewSubtask(subtaskTwoEpicTwo);
 
-        System.out.println("Данные по обновленному Epic 2 (статус изменился на IN_PROGRESS) "
-                + "т.к. добавилась Subtask-а в статусе NEW) "
-                + manager.getEpicById(3));
+        manager.getTaskById(0);
+        manager.getTaskById(2);
+        manager.getEpicById(3);
+        manager.getSubtaskById(6);
+        manager.getSubtaskById(7);
+        manager.getSubtaskById(9);
+        manager.getTaskById(0);
+        manager.getTaskById(1);
+        manager.getTaskById(2);
+        manager.getEpicById(3);
+        manager.getEpicById(4);
+        manager.getEpicById(5);
+        manager.getSubtaskById(6);
+        manager.getSubtaskById(7);
+        manager.getSubtaskById(8);
+        manager.getSubtaskById(9);
+        manager.getSubtaskById(10);
+
+        System.out.println("\nУникальные просмотры: " + manager.getHistory());
+
+        manager.deleteTaskById(0);
+
+        System.out.println("\nУникальные просмотры: (удалили Task 1 с id=0) " + manager.getHistory());
 
         manager.deleteSubtaskById(8);
 
-        System.out.println("Subtask 1 Epic 1 (id = 8) - удалена " + manager.getSubtaskById(8));
-        System.out.println("Данные по обновленному Epic 2 (статус изменился на DONE) "
-                + "т.к. ранее добавленная Subtask-а в статусе NEW была удалена) "
-                + manager.getEpicById(3));
+        System.out.println("\nУникальные просмотры: (удалили SubTask 3 из Epic 1 с id=8) "
+                + manager.getHistory());
 
-        manager.deleteAllSubtasks();
+        manager.deleteEpicById(4);
 
-        System.out.println("Все Sutask-и удалены " + manager.getAllSubtasks());
-        System.out.println("Данные по обновленным Epic-ам (статус изменился на NEW) "
-                + "т.к. все ранее добавленные Subtask-и были удалены) "
-                + manager.getAllEpics());
-
-        manager.deleteEpicById(2);
-
-        System.out.println("Epic 1 (id = 2) - удален " + manager.getEpicById(2));
-
-        manager.deleteAllEpics();
-
-        System.out.println("Все Epic-и удалены " + manager.getAllEpics());
+        System.out.println("\nУникальные просмотры: (удалили Epic 2 с id=4 и SubTask-и с id=9, id=10) "
+                + manager.getHistory());
     }
 }
