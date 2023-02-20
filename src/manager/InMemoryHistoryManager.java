@@ -10,6 +10,21 @@ import java.util.Map;
 public class InMemoryHistoryManager implements HistoryManager {
     private final CustomLinkedList tasksList = new CustomLinkedList();
 
+    @Override
+    public void add(Task task) {
+        tasksList.linkLast(task);
+    }
+
+    @Override
+    public void remove(int id) {
+        tasksList.removeNode(tasksList.getNode(id));
+    }
+
+    @Override
+    public List<Task> getHistory() {
+        return tasksList.getWatchedTasks();
+    }
+
     static class CustomLinkedList {
         private final Map<Integer, Node> watchedTasks = new HashMap<>();
         private Node first;
@@ -73,20 +88,5 @@ public class InMemoryHistoryManager implements HistoryManager {
         private Node getNode(int id) {
             return watchedTasks.get(id);
         }
-    }
-
-    @Override
-    public void add(Task task) {
-        tasksList.linkLast(task);
-    }
-
-    @Override
-    public void remove(int id) {
-        tasksList.removeNode(tasksList.getNode(id));
-    }
-
-    @Override
-    public List<Task> getHistory() {
-        return tasksList.getWatchedTasks();
     }
 }
