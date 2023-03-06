@@ -10,11 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final HashMap<Integer, Task> tasks = new HashMap<>();
-    private final HashMap<Integer, Epic> epics = new HashMap<>();
-    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    private int idGenerator = -1;
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected int id = -1;
+    protected final HashMap<Integer, Task> tasks = new HashMap<>();
+    protected final HashMap<Integer, Epic> epics = new HashMap<>();
+    protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    protected int idGenerator = -1;
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public ArrayList<Task> getAllTasks() {
@@ -189,7 +190,17 @@ public class InMemoryTaskManager implements TaskManager {
         historyManager.remove(id);
     }
 
-    private int generateNewId() {
+    @Override
+    public int getId() {
+        int res = id;
+        return ++res;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    protected int generateNewId() {
         return ++idGenerator;
     }
 }

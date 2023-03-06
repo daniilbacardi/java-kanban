@@ -63,11 +63,10 @@ public class Task {
 
     @Override
     public String toString() {
-        return "\n" + "Task{" +
-                "id=" + getId() +
-                ", name='" + getName() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", status='" + getStatus() + '\'' +
-                '}';
+        return id + "," +
+                "Task" + "," +
+                name + "," +
+                status + "," +
+                description;
     }
 }
