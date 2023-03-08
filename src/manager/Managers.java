@@ -3,12 +3,12 @@ package manager;
 import java.io.File;
 
 public class Managers {
-    /*public static TaskManager getDefault() {
-        return new InMemoryTaskManager();
-    }*/
-
     public static TaskManager getDefault() {
-        return new FileBackedTasksManager("src/files/SaveTasks.csv");
+        return new InMemoryTaskManager();
+    }
+
+    public static TaskManager getNewDefault(String file) {
+        return new FileBackedTasksManager(file);
     }
 
     public static TaskManager getDefault(File file) {
