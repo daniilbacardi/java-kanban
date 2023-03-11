@@ -7,12 +7,12 @@ public class Managers {
         return new InMemoryTaskManager();
     }
 
-    public static TaskManager getNewDefault(String file) {
+    public static TaskManager getNewDefault(File file) {
         return new FileBackedTasksManager(file);
     }
 
     public static TaskManager getDefault(File file) {
-        return FileBackedTasksManager.loadFromFile(file);
+        return (TaskManager) FileBackedTasksManager.loadFromFile(file);
     }
 
     public static HistoryManager getDefaultHistory() {

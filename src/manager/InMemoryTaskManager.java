@@ -10,26 +10,26 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    protected int id = -1;
-    protected final HashMap<Integer, Task> tasks = new HashMap<>();
-    protected final HashMap<Integer, Epic> epics = new HashMap<>();
-    protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    protected int idGenerator = -1;
-    protected final HistoryManager historyManager = Managers.getDefaultHistory();
+    public static int id = -1;
+    public static final HashMap<Integer, Task> tasks = new HashMap<>();
+    public static final HashMap<Integer, Epic> epics = new HashMap<>();
+    public static final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    public static int idGenerator = -1;
+    public static final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public ArrayList<Task> getAllTasks() {
-        return new ArrayList<>(this.tasks.values());
+        return new ArrayList<>(tasks.values());
     }
 
     @Override
     public ArrayList<Epic> getAllEpics() {
-        return new ArrayList<>(this.epics.values());
+        return new ArrayList<>(epics.values());
     }
 
     @Override
     public ArrayList<Subtask> getAllSubtasks() {
-        return new ArrayList<>(this.subtasks.values());
+        return new ArrayList<>(subtasks.values());
     }
 
     @Override
@@ -196,11 +196,7 @@ public class InMemoryTaskManager implements TaskManager {
         return ++res;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    protected int generateNewId() {
+    private int generateNewId() {
         return ++idGenerator;
     }
 }
