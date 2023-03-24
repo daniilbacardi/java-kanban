@@ -1,5 +1,6 @@
 package manager;
 
+import exceptions.ManagerSaveException;
 import tasksTypes.Epic;
 import tasksTypes.Subtask;
 import tasksTypes.Task;
@@ -94,6 +95,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateTask(Task task) {
         tasks.put(task.getId(), task);
+        validateTask(task);
     }
 
     @Override
@@ -123,6 +125,7 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = epics.get(epicId);
         updateEpic(epic);
         calcEpicStartAndFinish(epic);
+        validateTask(subtask);
     }
 
     private void calcEpicStart(Epic epic) {
@@ -179,8 +182,7 @@ public class InMemoryTaskManager implements TaskManager {
                     newTask.getEndTime().isBefore(task.getEndTime()))
                     || (newTask.getStartTime().isBefore(task.getEndTime()) &&
                     newTask.getEndTime().isAfter(task.getEndTime())))) {
-                System.out.println("Ваши задачи пересекается по времени выполнения!");
-                break;
+                throw new ManagerSaveException("Задача пересекается по времени.");
             }
         }
     }
@@ -255,8 +257,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllTasks() {
         for(Integer taskId : tasks.keySet()) {
             historyManager.remove(taskId);
-            prioritizedTasks.removeAll(tasks.values());
         }
+        prioritizedTasks.removeAll(tasks.values());
         tasks.clear();
     }
 
@@ -264,11 +266,11 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllEpics() {
         for(Integer subTaskId : subtasks.keySet()) {
             historyManager.remove(subTaskId);
-            prioritizedTasks.removeAll(subtasks.values());
         }
         for(Integer epicId : epics.keySet()) {
             historyManager.remove(epicId);
         }
+        prioritizedTasks.removeAll(subtasks.values());
         subtasks.clear();
         epics.clear();
     }
@@ -277,8 +279,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllSubtasks() {
         for(Integer subTaskId : subtasks.keySet()) {
             historyManager.remove(subTaskId);
-            prioritizedTasks.removeAll(subtasks.values());
         }
+        prioritizedTasks.removeAll(subtasks.values());
         subtasks.clear();
         for (Integer id : epics.keySet()) {
             Epic epic = epics.get(id);

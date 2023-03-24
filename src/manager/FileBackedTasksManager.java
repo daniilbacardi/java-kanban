@@ -1,5 +1,6 @@
 package manager;
 
+import exceptions.ManagerSaveException;
 import tasksTypes.Epic;
 import tasksTypes.Subtask;
 import tasksTypes.Task;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
+
+    private final File file = new File("src/files", "SaveTasks.csv");
 
     public FileBackedTasksManager(File file) {
     }
@@ -101,32 +104,32 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public Task getTaskById(int id) {
-        historyManager.add(tasks.get(id));
+        Task result = super.getTaskById(id);
         save();
-        return tasks.get(id);
+        return result;
     }
 
     @Override
     public Epic getEpicById(int id) {
-        historyManager.add(epics.get(id));
+        Epic result = super.getEpicById(id);
         save();
-        return epics.get(id);
+        return result;
     }
 
     @Override
     public Subtask getSubtaskById(int id) {
-        historyManager.add(subtasks.get(id));
+        Subtask result = super.getSubtaskById(id);
         save();
-        return subtasks.get(id);
+        return result;
     }
 
     public void save() throws ManagerSaveException {
         try {
-            Files.createFile(new File("src/files", "SaveTasks.csv").toPath());
+            Files.createFile(file.toPath());
         } catch (Exception exception) {
             exception.getStackTrace();
         }
-        try (Writer fileWriter = new FileWriter(new File("src/files", "SaveTasks.csv"));
+        try (Writer fileWriter = new FileWriter(file);
              BufferedWriter bw = new BufferedWriter(fileWriter)) {
             bw.write("id,type,name,status,description, start time, duration, end time, epic\n");
             for (Task task: tasks.values()) {
@@ -142,7 +145,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             bw.write(historyToString(historyManager));
         } catch (IOException exception) {
             System.out.println(exception.getMessage());
-            exception.getStackTrace();
             throw new ManagerSaveException("Произошла ошибка при записи данных в файл.");
         }
     }
