@@ -7,16 +7,19 @@ import tasksTypes.TaskStatus;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
-    private final File file;
-
     public FileBackedTasksManager(File file) {
-        this.file = file;
+    }
+
+    public FileBackedTasksManager() {
     }
 
     @Override
@@ -91,6 +94,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
+    public void deleteAllTaskTypes(){
+        super.deleteAllTaskTypes();
+        save();
+    }
+
+    @Override
     public Task getTaskById(int id) {
         historyManager.add(tasks.get(id));
         save();
@@ -110,17 +119,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         save();
         return subtasks.get(id);
     }
-    // в обходе ошибки IOException (отсутствует директория) не придумал ни чего лучше,
-    // чем создать ее и залить вместе с проектом
+
     public void save() throws ManagerSaveException {
         try {
-            Files.createFile(file.toPath());
+            Files.createFile(new File("src/files", "SaveTasks.csv").toPath());
         } catch (Exception exception) {
             exception.getStackTrace();
         }
-        try (Writer fileWriter = new FileWriter(file);
+        try (Writer fileWriter = new FileWriter(new File("src/files", "SaveTasks.csv"));
              BufferedWriter bw = new BufferedWriter(fileWriter)) {
-            bw.write("id,type,name,status,description,epic\n");
+            bw.write("id,type,name,status,description, start time, duration, end time, epic\n");
             for (Task task: tasks.values()) {
                 bw.write(task.toString() + "\n");
             }
@@ -144,16 +152,42 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         Task task;
         switch (entryArray[1]) {
             case "Task":
-                task = new Task(Integer.parseInt(entryArray[0]), entryArray[2], entryArray[4],
-                        TaskStatus.valueOf(entryArray[3]));
+                id = Integer.parseInt(entryArray[0]);
+                if (entryArray[5].equals("null")) {
+                    task = new Task(entryArray[2], entryArray[4], TaskStatus.valueOf(entryArray[3]), null,
+                            Optional.of(Integer.parseInt(entryArray[6])).orElse(0));
+                } else {
+                    task = new Task(entryArray[2], entryArray[4], TaskStatus.valueOf(entryArray[3]),
+                            LocalDateTime.parse(entryArray[5]), Integer.parseInt(entryArray[6]));
+                }
+                task.setId(id);
                 break;
             case "Subtask":
-                task = new Subtask(Integer.parseInt(entryArray[0]), entryArray[2], entryArray[4],
-                        TaskStatus.valueOf(entryArray[3]), Integer.parseInt(entryArray[5]));
+                id = Integer.parseInt(entryArray[0]);
+                if (entryArray[5].equals("null")) {
+                    task = new Subtask(entryArray[2], entryArray[4], TaskStatus.valueOf(entryArray[3]),
+                            null, Optional.of(Integer.parseInt(entryArray[6])).orElse(0),
+                            Integer.parseInt(entryArray[8]));
+                } else {
+                    task = new Subtask(entryArray[2], entryArray[4], TaskStatus.valueOf(entryArray[3]),
+                            LocalDateTime.parse(entryArray[5]), Integer.parseInt(entryArray[6]),
+                            Integer.parseInt(entryArray[8]));
+                }
+                task.setId(id);
                 break;
             case "Epic":
-                task = new Epic(Integer.parseInt(entryArray[0]), entryArray[2], entryArray[4],
-                        TaskStatus.valueOf(entryArray[3]));
+                id = Integer.parseInt(entryArray[0]);
+                if (entryArray[5].equals("null")) {
+                    task = new Epic(entryArray[2], entryArray[4], null, Integer.parseInt(entryArray[6]));
+                } else {
+                    task = new Epic(entryArray[2], entryArray[4], LocalDateTime.parse(entryArray[5]),
+                            Integer.parseInt(entryArray[6]));
+                    task.setStartTime(LocalDateTime.parse(entryArray[5]));
+                    task.setDuration(Integer.parseInt(entryArray[6]));
+                    ((Epic) task).setEndTime(LocalDateTime.parse(entryArray[7]));
+                }
+                task.setId(id);
+                task.setStatus(TaskStatus.valueOf(entryArray[3]));
                 break;
             default:
                 throw new ManagerSaveException("Произошла ошибка при записи данных в файл.");
@@ -161,11 +195,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return task;
     }
 
-    static List<Integer> historyFromString(String value) {
-        List <Integer> historyList = new ArrayList<>();
-        String[] taskIds = value.split(",");
-        for (String taskId: taskIds) {
-            historyList.add(Integer.parseInt(taskId));
+    public static List<Integer> historyFromString(String value) {
+        List<Integer> historyList = new ArrayList<>();
+        String[] list = value.split(",");
+        for (String s : list) {
+            historyList.add(Integer.parseInt(s));
         }
         return historyList;
     }
@@ -181,7 +215,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
         return res.toString();
     }
-    // полностью переписал метод: в предыдущем зашел в тупик с его исправлением, оказалось, проще переписать с нуля
+
     public static Object loadFromFile(File file) {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             FileBackedTasksManager fileBackedTasksManager =
@@ -223,17 +257,41 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public static void main(String[] args) {
         TaskManager manager = Managers.getNewDefault(new File("src/files", "SaveTasks.csv"));
 
-        Task taskOne = new Task("Task 1", "Описание Task 1");
-        Task taskTwo = new Task("Task 2", "Описание Task 2");
-        Task taskThree = new Task("Task 3", "Описание Task 3");
+        Task taskOne = new Task(
+                "Task 1",
+                "Описание Task 1",
+                LocalDateTime.of(2022,12,10,10,0),
+                30);
+        Task taskTwo = new Task(
+                "Task 2",
+                "Описание Task 2",
+                LocalDateTime.of(2022,12,10,11,0),
+                30);
+        Task taskThree = new Task(
+                "Task 3",
+                "Описание Task 3",
+                LocalDateTime.of(2022,12,10,12,0),
+                45);
 
         manager.createNewTask(taskOne);
         manager.createNewTask(taskTwo);
         manager.createNewTask(taskThree);
 
-        Epic epicOne = new Epic("Epic 1", "Описание Epic 1");
-        Epic epicTwo = new Epic("Epic 2", "Описание Epic 2");
-        Epic epicThree = new Epic("Epic 3", "Описание Epic 3");
+        Epic epicOne = new Epic(
+                "Epic 1",
+                "Описание Epic 1",
+                null,
+                0);
+        Epic epicTwo = new Epic(
+                "Epic 2",
+                "Описание Epic 2",
+                null,
+                0);
+        Epic epicThree = new Epic(
+                "Epic 3",
+                "Описание Epic 3",
+                null,
+                0);
 
         manager.createNewEpic(epicOne);
         manager.createNewEpic(epicTwo);
@@ -242,22 +300,32 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         Subtask subtaskOneEpicOne = new Subtask(
                 "Subtask 1 Epic 1",
                 "Описание Subtask 1 Epic 1",
+                LocalDateTime.of(2022,12,15,10,0),
+                60,
                 epicOne.getId());
         Subtask subtaskTwoEpicOne = new Subtask(
                 "Subtask 2 Epic 1",
                 "Описание Subtask 2 Epic 1",
+                LocalDateTime.of(2022,12,15,12,0),
+                120,
                 epicOne.getId());
         Subtask subtaskTreeEpicOne = new Subtask(
                 "Subtask 3 Epic 1",
                 "Описание Subtask 3 Epic 1",
+                LocalDateTime.of(2022,12,15,19,0),
+                60,
                 epicOne.getId());
         Subtask subtaskOneEpicTwo = new Subtask(
                 "Subtask 1 Epic 2",
                 "Описание Subtask 1 Epic 2",
+                LocalDateTime.of(2022,12,18,12,0),
+                300,
                 epicTwo.getId());
         Subtask subtaskTwoEpicTwo = new Subtask(
                 "Subtask 2 Epic 2",
                 "Описание Subtask 2 Epic 2",
+                LocalDateTime.of(2022,12,19,19,0),
+                60,
                 epicTwo.getId());
 
         manager.createNewSubtask(subtaskOneEpicOne);
@@ -289,6 +357,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         manager.deleteTaskById(0);
         manager.deleteSubtaskById(10);
 
+        printSortedTasks(manager.getPrioritizedTasks());
         printHistory(manager.getHistory());
 
         TaskManager newManager = Managers.getDefault(new File("src/files", "SaveTasks.csv"));
@@ -299,6 +368,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.print("История просмотров: \n");
         for (Task task : history) {
             System.out.print(task + "  " + "\n");
+        }
+        System.out.println();
+    }
+
+    public static void printSortedTasks(List<Task> tasksSet){
+        System.out.print("Отсортированные по дате и времени таски/сабтаски: \n");
+        for (Task task: tasksSet) {
+            System.out.print(
+                    "[ID " +
+                    task.getId() +
+                    ", Название " +
+                    task.getName() +
+                    " " + task.getStartTime().format(DateTimeFormatter.ofPattern("dd.MM.yy HH.mm")) + "]\n");
         }
         System.out.println();
     }
