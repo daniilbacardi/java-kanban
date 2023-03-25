@@ -10,6 +10,7 @@ import tasksTypes.Task;
 import tasksTypes.TaskStatus;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -452,6 +453,21 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
+    void calcEpicStartAndDurationTimeTest() {
+        taskManager.createNewEpic(epic);
+        Subtask subtask = new Subtask("Subtask1", "Descr1",
+                LocalDateTime.of(2022, 7, 20, 10, 20), 30, epic.getId());
+        taskManager.createNewSubtask(subtask);
+        Subtask subtask2 = new Subtask("Subtask1", "Descr1",
+                LocalDateTime.of(2022, 7, 15, 15, 0), 150, epic.getId());
+        taskManager.createNewSubtask(subtask2);
+
+        assertEquals(epic.getStartTime(), subtask2.getStartTime(), "Дата старта эпика рассчитана неверно.");
+        assertEquals(epic.getDuration(), (subtask.getDuration() + subtask2.getDuration()),
+                "Продолжительность эпика рассчитана неверно.");
+    }
+
+    @Test
     void throwNullPointerExceptionWithUpdatingEmptySubtaskListTest() {
         final NullPointerException exception = assertThrows(NullPointerException.class,
                 () -> {
@@ -602,72 +618,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void throwIntersectionExceptionCreateTasksWithIntersectionTimeTest() {
-        final IntersectionException exception = assertThrows(IntersectionException.class,
-                () -> {
-                    Task task1 = new Task("Task1", "Descr1", TaskStatus.NEW,
-                LocalDateTime.of(2022, 7, 10, 10, 0), 60);
-                    Task task2 = new Task("Task1", "Descr1", TaskStatus.NEW,
-                LocalDateTime.of(2022, 7, 10, 10, 30), 120);
-                    taskManager.createNewTask(task1);
-                    taskManager.createNewTask(task2);
-                });
-        assertEquals("Задача пересекается по времени.", exception.getMessage());
-    }
-
-    @Test
-    void throwIntersectionExceptionUpdateTasksWithIntersectionTimeTest() {
-        final IntersectionException exception = assertThrows(IntersectionException.class,
-                () -> {
-                    taskManager.deleteAllTaskTypes();
-                    Task task1 = new Task("Task1", "Descr1", TaskStatus.NEW,
-                            LocalDateTime.of(2022, 7, 10, 10, 0), 60);
-                    Task updatedTask1 = new Task(task1.getId(),"Task1", "Descr1", TaskStatus.DONE,
-                            LocalDateTime.of(2022, 7, 10, 10, 30), 120);
-                    taskManager.createNewTask(task1);
-                    taskManager.updateTask(updatedTask1);
-                });
-        assertEquals("Задача пересекается по времени.", exception.getMessage());
-    }
-
-    @Test
-    void throwIntersectionExceptionCreateSubtasksWithSameTimeTest() {
-        final IntersectionException exception = assertThrows(IntersectionException.class,
-                () -> {
-                    taskManager.deleteAllTaskTypes();
-                    taskManager.createNewEpic(epic);
-                    Subtask subtask1 = new Subtask("Task1", "Descr1",
-                            LocalDateTime.of(2022, 7, 10, 10, 0),
-                            60, epic.getId());
-                    Subtask subtask2 = new Subtask("Task1", "Descr1",
-                            LocalDateTime.of(2022, 7, 10, 9, 30),
-                            60, epic.getId());
-                    taskManager.createNewSubtask(subtask1);
-                    taskManager.createNewSubtask(subtask2);
-                });
-        assertEquals("Задача пересекается по времени.", exception.getMessage());
-    }
-
-    @Test
-    void throwIntersectionExceptionUpdateSubtasksWithSameTimeTest() {
-        final IntersectionException exception = assertThrows(IntersectionException.class,
-                () -> {
-                    taskManager.deleteAllTaskTypes();
-                    taskManager.createNewEpic(epic);
-                    Subtask subtask1 = new Subtask("Task1", "Descr1",
-                            LocalDateTime.of(2022, 7, 10, 10, 0),
-                            60, epic.getId());
-                    Subtask updatedSubtask1 = new Subtask(subtask1.getId(),"Task1",
-                            "Descr1", TaskStatus.DONE,
-                            LocalDateTime.of(2022, 7, 10, 9, 30),
-                            60, epic.getId());
-                    taskManager.createNewSubtask(subtask1);
-                    taskManager.updateSubtask(updatedSubtask1);
-                });
-        assertEquals("Задача пересекается по времени.", exception.getMessage());
-    }
-
-    @Test
     void getPrioritizedTasksTest() {
         taskManager.deleteAllTaskTypes();
         taskManager.createNewTask(task);
@@ -680,21 +630,89 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         firstTask.ifPresent(value -> assertEquals(task, value, "сортировка по приоритетам " +
                 "неверная(первая задача)"));
-        assertEquals(3, prioritizedTasks.size(), "Неверное количество задач.");
+        assertEquals(2, prioritizedTasks.size(), "Неверное количество задач.");
     }
 
     @Test
-     void calcEpicStartAndDurationTimeTest() {
-        taskManager.createNewEpic(epic);
-        Subtask subtask = new Subtask("Subtask1", "Descr1",
-                LocalDateTime.of(2022, 7, 20, 10, 20), 30, epic.getId());
-        taskManager.createNewSubtask(subtask);
-        Subtask subtask2 = new Subtask("Subtask1", "Descr1",
-                LocalDateTime.of(2022, 7, 15, 15, 0), 150, epic.getId());
-        taskManager.createNewSubtask(subtask2);
+    void throwIntersectionExceptionCreateTasksWithIntersectionTimeTest() {
+        taskManager.deleteAllTaskTypes();
+        final IntersectionException exception = assertThrows(IntersectionException.class,
+                () -> {
+                    Task task1 = new Task("Task1", "Descr1", TaskStatus.NEW,
+                            LocalDateTime.of(2022, 8, 10, 10, 0), 60);
+                    Task task2 = new Task("Task1", "Descr1", TaskStatus.NEW,
+                            LocalDateTime.of(2022, 8, 10, 10, 30), 120);
+                    taskManager.createNewTask(task1);
+                    taskManager.createNewTask(task2);
+                });
+        assertEquals("Задача пересекается по времени.", exception.getMessage());
+        List<Task> tasks = taskManager.getAllTasks();
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(prioritizedTasks.size(), tasks.size(),
+                "Разное количество задач в приоритезированном списке и списке задач.");
+    }
 
-        assertEquals(epic.getStartTime(), subtask2.getStartTime(), "Дата старта эпика рассчитана неверно.");
-        assertEquals(epic.getDuration(), (subtask.getDuration() + subtask2.getDuration()),
-                "Продолжительность эпика рассчитана неверно.");
+    @Test
+    void throwIntersectionExceptionUpdateTasksWithIntersectionTimeTest() {
+        taskManager.deleteAllTaskTypes();
+        final IntersectionException exception = assertThrows(IntersectionException.class,
+                () -> {
+                    Task task1 = new Task("Task1", "Descr1", TaskStatus.NEW,
+                            LocalDateTime.of(2022, 7, 10, 10, 0), 60);
+                    Task updatedTask1 = new Task(task1.getId(),"Task1", "Descr1", TaskStatus.DONE,
+                            LocalDateTime.of(2022, 7, 10, 10, 30), 120);
+                    taskManager.createNewTask(task1);
+                    taskManager.updateTask(updatedTask1);
+                });
+        assertEquals("Задача пересекается по времени.", exception.getMessage());
+        List<Task> tasks = taskManager.getAllTasks();
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(prioritizedTasks.size(), tasks.size(),
+                "Разное количество задач в приоритезированном списке и списке задач.");
+    }
+
+    @Test
+    void throwIntersectionExceptionCreateSubtasksWithSameTimeTest() {
+        taskManager.deleteAllTaskTypes();
+        final IntersectionException exception = assertThrows(IntersectionException.class,
+                () -> {
+                    taskManager.createNewEpic(epic);
+                    Subtask subtask1 = new Subtask("Task1", "Descr1",
+                            LocalDateTime.of(2022, 7, 10, 10, 0),
+                            60, epic.getId());
+                    Subtask subtask2 = new Subtask("Task1", "Descr1",
+                            LocalDateTime.of(2022, 7, 10, 9, 30),
+                            60, epic.getId());
+                    taskManager.createNewSubtask(subtask1);
+                    taskManager.createNewSubtask(subtask2);
+                });
+        assertEquals("Задача пересекается по времени.", exception.getMessage());
+        ArrayList<Subtask> tasks = taskManager.getAllSubtasks();
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(prioritizedTasks.size(), tasks.size(),
+                "Разное количество задач в приоритезированном списке и списке задач.");
+    }
+
+    @Test
+    void throwIntersectionExceptionUpdateSubtasksWithSameTimeTest() {
+        taskManager.deleteAllTaskTypes();
+        final IntersectionException exception = assertThrows(IntersectionException.class,
+                () -> {
+                    taskManager.createNewEpic(epic);
+                    Subtask subtask1 = new Subtask("Task1", "Descr1",
+                            LocalDateTime.of(2022, 7, 10, 10, 0),
+                            60, epic.getId());
+                    Subtask updatedSubtask1 = new Subtask(subtask1.getId(),"Task1",
+                            "Descr1", TaskStatus.DONE,
+                            LocalDateTime.of(2022, 7, 10, 9, 30),
+                            60, epic.getId());
+                    taskManager.createNewSubtask(subtask1);
+                    taskManager.updateSubtask(updatedSubtask1);
+                });
+        assertEquals("Задача пересекается по времени.", exception.getMessage());
+        ArrayList<Subtask> tasks = taskManager.getAllSubtasks();
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(prioritizedTasks.size(), tasks.size(),
+                "Разное количество задач в приоритезированном списке и списке задач.");
     }
 }

@@ -66,8 +66,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void createNewTask(Task task) {
         int id = generateNewId();
         task.setId(id);
-        addNewPrioritizedTask(task);
         task.setStatus(TaskStatus.NEW);
+        addNewPrioritizedTask(task);
         tasks.put(id, task);
    }
 
@@ -172,7 +172,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getPrioritizedTasks() {
-          return new ArrayList<>(prioritizedTasks);
+        return new ArrayList<>(prioritizedTasks);
     }
 
     public void validateTask(Task newTask) {
@@ -202,7 +202,8 @@ public class InMemoryTaskManager implements TaskManager {
         calcEpicDuration(epic);
         calcEpicFinish(epic);
     }
-
+    // добавил 4 теста на проверку, что кол-во задач в приоритезированном списке
+    // и списке задач одинаковое (завершающие тесты в TaskManagerTest)
     private void addNewPrioritizedTask(Task task) {
         if (task == null) {
             return;
@@ -303,6 +304,7 @@ public class InMemoryTaskManager implements TaskManager {
         deleteAllSubtasks();
         deleteAllEpics();
         deleteAllTasks();
+        prioritizedTasks.clear();
     }
 
     @Override
