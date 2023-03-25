@@ -17,9 +17,10 @@ import java.util.Optional;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
-    private final File file = new File("src/files", "SaveTasks.csv");
+    private File file = new File("src/files", "SaveTasks.csv");
 
     public FileBackedTasksManager(File file) {
+        this.file = file;
     }
 
     public FileBackedTasksManager() {

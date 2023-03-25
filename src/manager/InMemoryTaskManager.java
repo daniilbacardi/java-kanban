@@ -1,5 +1,6 @@
 package manager;
 
+import exceptions.IntersectionException;
 import exceptions.ManagerSaveException;
 import tasksTypes.Epic;
 import tasksTypes.Subtask;
@@ -94,8 +95,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
+        addNewPrioritizedTask(task);
         tasks.put(task.getId(), task);
-        validateTask(task);
     }
 
     @Override
@@ -120,12 +121,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubtask(Subtask subtask) {
+        addNewPrioritizedTask(subtask);
         subtasks.put(subtask.getId(), subtask);
         int epicId = subtask.getEpicId();
         Epic epic = epics.get(epicId);
         updateEpic(epic);
         calcEpicStartAndFinish(epic);
-        validateTask(subtask);
     }
 
     private void calcEpicStart(Epic epic) {
@@ -182,7 +183,7 @@ public class InMemoryTaskManager implements TaskManager {
                     newTask.getEndTime().isBefore(task.getEndTime()))
                     || (newTask.getStartTime().isBefore(task.getEndTime()) &&
                     newTask.getEndTime().isAfter(task.getEndTime())))) {
-                throw new ManagerSaveException("Задача пересекается по времени.");
+                throw new IntersectionException("Задача пересекается по времени.");
             }
         }
     }
@@ -203,8 +204,12 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void addNewPrioritizedTask(Task task) {
-        prioritizedTasks.add(task);
+        if (task == null) {
+            return;
+        }
         validateTask(task);
+        prioritizedTasks.add(task);
+
     }
 
     @Override
