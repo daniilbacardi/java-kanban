@@ -202,8 +202,7 @@ public class InMemoryTaskManager implements TaskManager {
         calcEpicDuration(epic);
         calcEpicFinish(epic);
     }
-    // добавил 4 теста на проверку, что кол-во задач в приоритезированном списке
-    // и списке задач одинаковое (завершающие тесты в TaskManagerTest)
+
     private void addNewPrioritizedTask(Task task) {
         if (task == null) {
             return;

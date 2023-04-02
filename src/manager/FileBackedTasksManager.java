@@ -150,7 +150,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private static Task fromString(String value) {
+    static Task fromString(String value) {
         String[] entryArray = value.split(",");
         Task task;
         switch (entryArray[1]) {
