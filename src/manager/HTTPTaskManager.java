@@ -1,5 +1,7 @@
 package manager;
 
+import com.google.gson.Gson;
+import exceptions.ManagerSaveException;
 import tasksTypes.Epic;
 import tasksTypes.Subtask;
 import tasksTypes.Task;
@@ -10,6 +12,7 @@ import java.net.URL;
 public class HTTPTaskManager extends FileBackedTasksManager implements TaskManager {
     private final URL url;
     private final KVTaskClient kvTaskClient;
+    Gson gson = new Gson();
 
     public HTTPTaskManager(URL url){
         this.url = url;
@@ -23,31 +26,14 @@ public class HTTPTaskManager extends FileBackedTasksManager implements TaskManag
     }
 
     @Override
-    public void save() {
-        StringBuilder tasksStringBuilder = new StringBuilder();
-        StringBuilder subtasksStringBuilder = new StringBuilder();
-        StringBuilder epicsStringBuilder = new StringBuilder();
-        StringBuilder historyStringBuilder = new StringBuilder();
-
-        for (Task task : getAllTasks()) {
-            tasksStringBuilder.append(task.toString()).append("//");
-        }
-        for (Subtask subtask : getAllSubtasks()) {
-            subtasksStringBuilder.append(subtask.toString()).append("//");
-        }
-        for (Epic epic : getAllEpics()) {
-            epicsStringBuilder.append(epic.toString()).append("//");
-        }
-        for (Task task : getHistory()) {
-            historyStringBuilder.append(task.getId()).append(",");
-        }
+    public void save() throws ManagerSaveException {
         try {
-            kvTaskClient.put(String.valueOf(TaskKey.TASK_KEY), tasksStringBuilder.toString());
-            kvTaskClient.put(String.valueOf(TaskKey.SUBTASK_KEY), subtasksStringBuilder.toString());
-            kvTaskClient.put(String.valueOf(TaskKey.EPIC_KEY), epicsStringBuilder.toString());
-            kvTaskClient.put(String.valueOf(TaskKey.HISTORY_KEY), historyStringBuilder.toString());
-        } catch (IOException | InterruptedException e) {
-            System.out.println("Ошибка в методе save() " + e.getMessage());
+            kvTaskClient.put((String.valueOf(TaskKey.TASK_KEY)), gson.toJson(tasks.values()));
+            kvTaskClient.put((String.valueOf(TaskKey.SUBTASK_KEY)), gson.toJson(subtasks.values()));
+            kvTaskClient.put((String.valueOf(TaskKey.EPIC_KEY)), gson.toJson(epics.values()));
+            kvTaskClient.put((String.valueOf(TaskKey.HISTORY_KEY)), gson.toJson(getHistory()));
+        } catch (ManagerSaveException | IOException | InterruptedException e) {
+            System.out.println("Ошибка записи");
         }
     }
 
